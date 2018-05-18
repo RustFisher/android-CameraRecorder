@@ -35,7 +35,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Uri outputMediaFileUri;
     private String outputMediaFileType;
 
-
     public CameraPreview(Context context) {
         super(context);
         mHolder = getHolder();
@@ -64,6 +63,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        mHolder.removeCallback(this);
+        mCamera.setPreviewCallback(null);
+        mCamera.stopPreview();
+        mCamera.release();
+        mCamera = null;
+        Log.d(TAG, "surfaceDestroyed");
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        Log.d(TAG, "surfaceChanged [" + w + ", " + h + "]");
+    }
+
     private void getCameraOptimalVideoSize() {
         try {
             Camera.Parameters parameters = mCamera.getParameters();
@@ -77,19 +91,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e) {
             Log.e(TAG, "getCameraOptimalVideoSize: ", e);
         }
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        mHolder.removeCallback(this);
-        mCamera.setPreviewCallback(null);
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
     }
 
     public boolean startRecording() {

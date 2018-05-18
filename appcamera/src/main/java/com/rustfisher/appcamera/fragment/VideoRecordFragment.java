@@ -1,14 +1,11 @@
 package com.rustfisher.appcamera.fragment;
 
-import android.hardware.Camera;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,7 +23,7 @@ public class VideoRecordFragment extends Fragment {
 
     private Button mCaptureBtn;
     private CameraPreview mCameraPreview;
-
+    private View mRoot; // fragment根视图
     public static VideoRecordFragment newInstance() {
         return new VideoRecordFragment();
     }
@@ -48,13 +45,32 @@ public class VideoRecordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "frag onViewCreated");
         super.onViewCreated(view, savedInstanceState);
+        mRoot = view;
         mCaptureBtn = view.findViewById(R.id.capture_btn);
         mCaptureBtn.setOnClickListener(mOnClickListener);
+        initCameraPreview();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: 销毁预览");
+        mCameraPreview = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: 回到前台");
+        if (null == mCameraPreview) {
+            initCameraPreview();
+        }
+    }
+
+    private void initCameraPreview() {
         mCameraPreview = new CameraPreview(getContext());
-        FrameLayout preview = view.findViewById(R.id.camera_preview);
+        FrameLayout preview = mRoot.findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
-
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
