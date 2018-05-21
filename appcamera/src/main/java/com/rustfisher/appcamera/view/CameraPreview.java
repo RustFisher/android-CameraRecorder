@@ -46,7 +46,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             c = Camera.open();
         } catch (Exception e) {
-            Log.d(TAG, "camera is not available");
+            Log.e(TAG, "camera is not available", e);
         }
         return c;
     }
@@ -115,7 +115,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private boolean prepareVideoRecorder() {
-        mCamera = getCameraInstance();
+        if (null == mCamera) {
+            mCamera = getCameraInstance();
+        }
         mMediaRecorder = new MediaRecorder();
 
         mCamera.unlock();

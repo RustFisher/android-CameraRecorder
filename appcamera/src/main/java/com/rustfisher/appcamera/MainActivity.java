@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         for (String permission : permissions) {
             if (PackageManager.PERMISSION_GRANTED !=
                     ActivityCompat.checkSelfPermission(context, permission)) {
+                Log.e(TAG, "no permission: " + permission);
                 return false;
             }
         }
